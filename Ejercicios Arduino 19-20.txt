@@ -1,0 +1,95 @@
+//lINK DE TINKERCAD
+
+//Ejercico 19 : https://www.tinkercad.com/things/aXrsqzRR7F7
+//Ejercicio 20: https://www.tinkercad.com/things/2zzXwKVrhF1
+
+
+----------------------CODIGO FUENTE -----------------------
+
+
+//EJERCICIO 19 DE ARDUINO, LED-POTENCIOMETRO
+// Problema 19 - practica 2
+const int Led = 11;  // Led
+                     // Puerto PWM, simula una salida Analogica
+
+const int Pot = A5; // Potenciometro
+                    // es Analogica, solo de entrada,
+                    // no Existe de salida
+                    // Puerto Analogo, capacidad 10 bit -> 1023
+
+int outPot;         // Valor de salida del Potensiometro
+int intensidadLed;  // Intensidad del Led
+                    // valor ya convertido con "map",
+                    // rangos a-1023 a 0-255:
+
+
+void setup()
+{
+  pinMode (Led, OUTPUT);  // Define al Led como salida
+  Serial.begin (9600);    // Inicializa Puerto Serie
+}
+
+void loop()
+{
+    outPot = analogRead(Pot);  // Captura la salida de Potenciometro:
+    intensidadLed= map(outPot, 0,1023,0,255);  // Convierte la salida del Potenciometro (0 a 1023)
+                                               // a un valor equivalente para el Led (0 a 256)
+                                               // Funcion "map"
+    analogWrite(Led, intensidadLed);  // alimentamos al Led con la señal convertida analogica
+                                      // (luego del "map")
+    Serial.print(outPot);  // Mostrar en el Monitor serie el valor de salida del potenciometro
+    Serial.print (" --> ");
+    Serial.println(intensidadLed);  // Mostrar en el Monitor serie el valor de entrada al Led
+    delay(250); // Esperamos 250 milisegundos
+}
+
+
+
+//EJERCICIO 20 DE ARDUINO, PANTALLA LCD
+
+// Problema 20 - practica 2 
+
+//libreria para pantalla LCD
+#include <LiquidCrystal.h>
+
+int contraste =25;
+//inicializar las librerias con los pines del arduino
+LiquidCrystal lcd(12,11,5,4,3,2);
+   
+void setup(){
+  //Inicializamos el puerto serial,
+  //donde se captura todas las entradas
+  Serial.begin(9600); 
+  analogWrite(6,contraste);
+  //inicializamos la interfaz de la pantalla LCD
+  //con dimensiones (ancho 16,alto 2)
+  lcd.begin(16, 2);
+  //Imprimimos un mensaje en la pantalla
+  lcd.print("Bienvenidos !!!");
+}
+   
+void loop()
+{
+  //Variables para separar los mensajes de entrada
+  int cont;
+  bool cont2;
+  
+  //condicional queverifica si se han enviaron datos
+  //por el puerto serial
+  if(Serial.available()){
+    delay (200);
+    lcd.clear();
+    // Ciclo que separa los mensajes que son mayores a 16
+    //caracteres, para que queden tambien en la siguiente columna
+    while(Serial.available()>0){
+      if (cont>15 && cont2 == false){
+        lcd.setCursor(0,1);
+        cont2 = true;
+      }
+      //imprimir el mensaje que se envio por el puerto serial
+      //en la pantalla LCD
+      lcd.write(Serial.read());
+      cont++;
+    } 
+  }
+}
